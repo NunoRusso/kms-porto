@@ -749,8 +749,7 @@ function wireEvents() {
   els.btnBackEntries.addEventListener("click", () => showScreen("screen-home"));
   els.btnCancelSettings.addEventListener("click", () => showScreen("screen-home"));
   els.btnSaveSettings.addEventListener("click", onSaveSettings);
-  els.btnExportWeek.addEventListener("click", onExportWeek);
-  els.btnShareWeek.addEventListener("click", onShareWeek);
+ els.btnExportWeek.addEventListener("click", onExportWeek); els.btnShareWeek.addEventListener("click", onShareWeekText); els.btnSharePhotos.addEventListener("click", onShareWeekPhotos);
 
   els.entryForm.addEventListener("submit", onEntrySubmit);
   els.entryKmStart.addEventListener("input", updateKmDayPreview);
