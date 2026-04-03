@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="pt-PT">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="description" content="Kms Porto - registo diário de kms, quadrante e talões com partilha semanal." />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+    <title>Kms Porto</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="top-card">
+        <div>
+          <p class="eyebrow">Registo local com partilha semanal</p>
+          <h1>Kms Porto</h1>
+          <p class="subtle">Cada comercial usa o seu telemóvel e, no fim da semana, partilha o resumo contigo.</p>
+        </div>
+        <span class="badge">iOS / Android</span>
+      </header>
+
+      <main id="screen-home" class="screen active">
+        <section class="card">
+          <div class="section-title">
+            <div>
+              <h2>Comercial</h2>
+              <p>Define o perfil deste telemóvel.</p>
+            </div>
+          </div>
+          <label class="field">
+            <span>Nome</span>
+            <select id="current-user"></select>
+          </label>
+        </section>
+
+        <section class="grid-actions">
+          <button id="btn-new-entry" class="action-card">
+            <strong>Novo registo</strong>
+            <span>KM, observações e fotos do dia.</span>
+          </button>
+          <button id="btn-share-week" class="action-card">
+            <strong>Partilhar semana</strong>
+            <span>Enviar por WhatsApp ou email.</span>
+          </button>
+          <button id="btn-export-week" class="action-card">
+            <strong>Exportar CSV</strong>
+            <span>Resumo semanal em ficheiro.</span>
+          </button>
+          <button id="btn-go-settings" class="action-card">
+            <strong>Configurar</strong>
+            <span>Lista da equipa e opções.</span>
+          </button>
+        </section>
+
+        <section class="card">
+          <div class="section-title">
+            <div>
+              <h2 id="summary-title">Semana</h2>
+              <p>Resumo do comercial selecionado.</p>
+            </div>
+          </div>
+          <div class="metrics">
+            <div class="metric-box">
+              <span>Dias</span>
+              <strong id="metric-days">0</strong>
+            </div>
+            <div class="metric-box">
+              <span>KM</span>
+              <strong id="metric-km">0</strong>
+            </div>
+            <div class="metric-box">
+              <span>Talões</span>
+              <strong id="metric-receipts">0</strong>
+            </div>
+          </div>
+          <button id="btn-go-entries" class="secondary">Ver detalhe da semana</button>
+        </section>
+      </main>
+
+      <main id="screen-entry" class="screen">
+        <form id="entry-form" class="card form-stack">
+          <div class="section-title">
+            <div>
+              <h2>Registo diário</h2>
+              <p>Um registo por dia, com fotos opcionais.</p>
+            </div>
+          </div>
+
+          <label class="field">
+            <span>Comercial</span>
+            <select id="entry-salesperson" required></select>
+          </label>
+
+          <label class="field">
+            <span>Data</span>
+            <input id="entry-date" type="date" required />
+          </label>
+
+          <label class="field">
+            <span>KM no início do dia</span>
+            <input id="entry-km-start" type="number" inputmode="numeric" min="0" required />
+          </label>
+
+          <label class="field">
+            <span>KM no fim do dia</span>
+            <input id="entry-km-end" type="number" inputmode="numeric" min="0" required />
+          </label>
+
+          <label class="field">
+            <span>Clientes / zona / observações</span>
+            <textarea id="entry-notes" rows="4" placeholder="Ex.: Braga, 4 visitas, 1 proposta, cobrança efetuada"></textarea>
+          </label>
+
+          <label class="field">
+            <span>Foto do quadrante</span>
+            <input id="entry-dashboard-photo" type="file" accept="image/*" capture="environment" />
+          </label>
+          <div id="dashboard-preview" class="preview-grid single"></div>
+
+          <label class="field">
+            <span>Fotos de talões</span>
+            <input id="entry-receipt-photos" type="file" accept="image/*" capture="environment" multiple />
+            <small>Até 5 fotos por registo.</small>
+          </label>
+          <div id="receipts-preview" class="preview-grid"></div>
+
+          <div class="info-box">
+            KM do dia: <strong id="km-day-preview">0</strong>
+          </div>
+
+          <div class="button-row">
+            <button type="submit" class="primary">Guardar registo</button>
+            <button type="button" id="btn-cancel-entry" class="secondary">Cancelar</button>
+          </div>
+        </form>
+      </main>
+
+      <main id="screen-entries" class="screen">
+        <section class="card">
+          <div class="section-title">
+            <div>
+              <h2>Registos do comercial</h2>
+              <p>Histórico guardado neste telemóvel.</p>
+            </div>
+          </div>
+          <div id="entries-list" class="list-stack"></div>
+          <button id="btn-back-entries" class="secondary">Voltar</button>
+        </section>
+      </main>
+
+      <main id="screen-settings" class="screen">
+        <section class="card form-stack">
+          <div class="section-title">
+            <div>
+              <h2>Configuração</h2>
+              <p>Normalmente defines isto uma vez por aparelho.</p>
+            </div>
+          </div>
+
+          <label class="field">
+            <span>Comercial deste telemóvel</span>
+            <select id="settings-current-user"></select>
+          </label>
+
+          <label class="field">
+            <span>Lista de comerciais</span>
+            <textarea id="settings-salespeople" rows="8"></textarea>
+          </label>
+
+          <div class="button-row">
+            <button id="btn-save-settings" class="primary" type="button">Guardar</button>
+            <button id="btn-cancel-settings" class="secondary" type="button">Cancelar</button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="bottom-nav">
+      <button data-screen="screen-home" class="nav-btn active">Início</button>
+      <button data-screen="screen-entry" class="nav-btn">Registar</button>
+      <button data-screen="screen-entries" class="nav-btn">Semana</button>
+      <button data-screen="screen-settings" class="nav-btn">Perfil</button>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
