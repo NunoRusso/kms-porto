@@ -17,23 +17,23 @@
         <div>
           <p class="eyebrow">Registo local com partilha semanal</p>
           <h1>Kms Porto</h1>
-          <p class="subtle">Cada comercial usa o seu telemóvel e, no fim da semana, partilha o resumo contigo.</p>
+          <p class="subtle">Cada comercial regista localmente no seu telemóvel e envia o resumo semanal.</p>
         </div>
         <span class="badge">iOS / Android</span>
       </header>
 
       <main id="screen-home" class="screen active">
         <section class="card">
-          <div class="section-title">
-            <div>
-              <h2>Comercial</h2>
-              <p>Define o perfil deste telemóvel.</p>
-            </div>
-          </div>
-          <label class="field">
-            <span>Nome</span>
-            <select id="current-user"></select>
-          </label>
+         <div class="section-title">
+  <div>
+    <h2>Comercial</h2>
+    <p>Este telemóvel fica associado a um único comercial.</p>
+  </div>
+</div>
+<label class="field">
+  <span>Comercial deste telemóvel</span>
+  <select id="current-user" disabled></select>
+</label> 
         </section>
 
         <section class="grid-actions">
@@ -72,7 +72,7 @@
               <strong id="metric-km">0</strong>
             </div>
             <div class="metric-box">
-              <span>Talões</span>
+              <span>Fotos de talões</span>
               <strong id="metric-receipts">0</strong>
             </div>
           </div>
@@ -127,9 +127,9 @@
           </label>
           <div id="receipts-preview" class="preview-grid"></div>
 
-          <div class="info-box">
-            KM do dia: <strong id="km-day-preview">0</strong>
-          </div>
+          <div id="km-day-box" class="info-box" hidden>
+  KM do dia: <strong id="km-day-preview">0</strong>
+</div>
 
           <div class="button-row">
             <button type="submit" class="primary">Guardar registo</button>
