@@ -226,8 +226,12 @@ function makeWeeklySummaryText(entries, salesperson, week, year) {
     .slice()
     .sort((a, b) => a.date.localeCompare(b.date))
     .forEach((entry) => {
-      lines.push(`${formatDate(entry.date)} | ${entry.kmStart} → ${entry.kmEnd} | ${entry.kmDay} km${entry.notes ? ` | ${entry.notes}` : ""}`);
-    });
+            lines.push(
+        `${formatDate(entry.date)} | ${entry.kmStart} → ${entry.kmEnd} | ${entry.kmDay} km` +
+        `${entry.dashboardPhoto ? " | quadrante: sim" : " | quadrante: não"}` +
+        `${entry.receiptPhotos.length ? ` | talões: ${entry.receiptPhotos.length}` : " | talões: 0"}` +
+        `${entry.notes ? ` | ${entry.notes}` : ""}`
+      );
 
   return lines.join("\n");
 }
@@ -530,17 +534,34 @@ async function onShareWeek() {
     { type: "text/csv" }
   );
 
-  const files = [csvFile];
-  entries.forEach((entry, index) => {
-    if (entry.dashboardPhoto?.dataUrl) {
-      files.push(dataUrlToFile(entry.dashboardPhoto.dataUrl, entry.dashboardPhoto.name || `quadrante_${index + 1}.jpg`));
-    }
-    entry.receiptPhotos.forEach((photo, receiptIndex) => {
-      if (photo?.dataUrl) {
-        files.push(dataUrlToFile(photo.dataUrl, photo.name || `talao_${index + 1}_${receiptIndex + 1}.jpg`));
+    const files = [csvFile];
+
+  entries
+    .slice()
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .forEach((entry, index) => {
+      const safeDate = entry.date || `dia_${index + 1}`;
+
+      if (entry.dashboardPhoto?.dataUrl) {
+        files.push(
+          dataUrlToFile(
+            entry.dashboardPhoto.dataUrl,
+            `${safeDate}_quadrante_${index + 1}.jpg`
+          )
+        );
       }
+
+      entry.receiptPhotos.forEach((photo, receiptIndex) => {
+        if (photo?.dataUrl) {
+          files.push(
+            dataUrlToFile(
+              photo.dataUrl,
+              `${safeDate}_talao_${index + 1}_${receiptIndex + 1}.jpg`
+            )
+          );
+        }
+      });
     });
-  });
 
   try {
     if (navigator.share && navigator.canShare?.({ files })) {
