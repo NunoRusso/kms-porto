@@ -38,8 +38,104 @@ const els = {
   metricKm: document.getElementById("metric-km"),
   metricReceipts: document.getElementById("metric-receipts"),
   btnNewEntry: document.getElementById("btn-new-entry"),
-  btnShareWeek: document.getElementById("btn-share-week"),
-  btnExportWeek: document.getElementById("btn-export-week"),
+ function buildWeekMediaFiles(entries) {
+  const files = [];
+
+  entries
+    .slice()
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .forEach((entry, index) => {
+      const safeDate = entry.date || `dia_${index + 1}`;
+
+      if (entry.dashboardPhoto?.dataUrl) {
+        files.push(
+          dataUrlToFile(
+            entry.dashboardPhoto.dataUrl,
+            `${safeDate}_quadrante_${index + 1}.jpg`
+          )
+        );
+      }
+
+      entry.receiptPhotos.forEach((photo, receiptIndex) => {
+        if (photo?.dataUrl) {
+          files.push(
+            dataUrlToFile(
+              photo.dataUrl,
+              `${safeDate}_talao_${index + 1}_${receiptIndex + 1}.jpg`
+            )
+          );
+        }
+      });
+    });
+
+  return files;
+}
+
+async function onShareWeekText() {
+  const entries = getMyWeekEntries();
+
+  if (!entries.length) {
+    showToast("Não existem registos nesta semana.");
+    return;
+  }
+
+  const week = currentWeek();
+  const year = currentYear();
+  const text = makeWeeklySummaryText(entries, state.currentUser, week, year);
+
+  try {
+    if (navigator.share) {
+      await navigator.share({
+        title: `Resumo semanal ${state.currentUser}`,
+        text,
+      });
+      showToast("Resumo semanal preparado para partilha.");
+      return;
+    }
+
+    await navigator.clipboard.writeText(text);
+    showToast("Resumo copiado. Abre o WhatsApp e cola.");
+  } catch (error) {
+    if (error?.name !== "AbortError") {
+      console.error(error);
+      showToast("Não foi possível partilhar o resumo.");
+    }
+  }
+}
+
+async function onShareWeekPhotos() {
+  const entries = getMyWeekEntries();
+
+  if (!entries.length) {
+    showToast("Não existem registos nesta semana.");
+    return;
+  }
+
+  const files = buildWeekMediaFiles(entries);
+
+  if (!files.length) {
+    showToast("Não existem fotos para partilhar nesta semana.");
+    return;
+  }
+
+  try {
+    if (navigator.share && navigator.canShare?.({ files })) {
+      await navigator.share({
+        title: `Fotos semanais ${state.currentUser}`,
+        files,
+      });
+      showToast("Fotos preparadas para partilha.");
+      return;
+    }
+
+    showToast("Este dispositivo não suporta partilha de fotos.");
+  } catch (error) {
+    if (error?.name !== "AbortError") {
+      console.error(error);
+      showToast("Não foi possível partilhar as fotos.");
+    }
+  }
+}
   btnGoSettings: document.getElementById("btn-go-settings"),
   btnGoEntries: document.getElementById("btn-go-entries"),
   btnCancelEntry: document.getElementById("btn-cancel-entry"),
