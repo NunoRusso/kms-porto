@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kms-porto-v4';
+const CACHE_NAME = 'kms-porto-v1';
 const APP_SHELL = [
   './',
   './index.html',
