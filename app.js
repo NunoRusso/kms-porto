@@ -226,12 +226,8 @@ function makeWeeklySummaryText(entries, salesperson, week, year) {
     .slice()
     .sort((a, b) => a.date.localeCompare(b.date))
     .forEach((entry) => {
-            lines.push(
-        `${formatDate(entry.date)} | ${entry.kmStart} → ${entry.kmEnd} | ${entry.kmDay} km` +
-        `${entry.dashboardPhoto ? " | quadrante: sim" : " | quadrante: não"}` +
-        `${entry.receiptPhotos.length ? ` | talões: ${entry.receiptPhotos.length}` : " | talões: 0"}` +
-        `${entry.notes ? ` | ${entry.notes}` : ""}`
-      );
+      lines.push(`${formatDate(entry.date)} | ${entry.kmStart} → ${entry.kmEnd} | ${entry.kmDay} km${entry.notes ? ` | ${entry.notes}` : ""}`);
+    });
 
   return lines.join("\n");
 }
@@ -407,33 +403,19 @@ async function handleDashboardPhotoChange(file) {
     renderPreviews();
     return;
   }
-
-  state.isProcessingFiles = true;
-
-  try {
-    state.dashboardPhoto = await compressImage(file, { maxWidth: 1600, quality: 0.78 });
-    renderPreviews();
-  } finally {
-    state.isProcessingFiles = false;
-  }
+  state.dashboardPhoto = await compressImage(file, { maxWidth: 1600, quality: 0.78 });
+  renderPreviews();
 }
 
 async function handleReceiptPhotosChange(fileList) {
   const files = Array.from(fileList || []).slice(0, 5);
-
-  state.isProcessingFiles = true;
   state.receiptPhotos = [];
-
-  try {
-    for (const file of files) {
-      // talões: tamanho mais pequeno para poupar armazenamento
-      const photo = await compressImage(file, { maxWidth: 1200, quality: 0.72 });
-      state.receiptPhotos.push(photo);
-    }
-    renderPreviews();
-  } finally {
-    state.isProcessingFiles = false;
+  for (const file of files) {
+    // talões: tamanho mais pequeno para poupar armazenamento
+    const photo = await compressImage(file, { maxWidth: 1200, quality: 0.72 });
+    state.receiptPhotos.push(photo);
   }
+  renderPreviews();
 }
 
 async function onEntrySubmit(event) {
@@ -459,10 +441,6 @@ async function onEntrySubmit(event) {
   }
   if (kmEnd < kmStart) {
     showToast("O km final não pode ser inferior ao inicial.");
-    return;
-  }
-    if (state.isProcessingFiles) {
-    showToast("Aguarda um momento até as fotos ficarem preparadas.");
     return;
   }
 
@@ -534,34 +512,17 @@ async function onShareWeek() {
     { type: "text/csv" }
   );
 
-    const files = [csvFile];
-
-  entries
-    .slice()
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .forEach((entry, index) => {
-      const safeDate = entry.date || `dia_${index + 1}`;
-
-      if (entry.dashboardPhoto?.dataUrl) {
-        files.push(
-          dataUrlToFile(
-            entry.dashboardPhoto.dataUrl,
-            `${safeDate}_quadrante_${index + 1}.jpg`
-          )
-        );
+  const files = [csvFile];
+  entries.forEach((entry, index) => {
+    if (entry.dashboardPhoto?.dataUrl) {
+      files.push(dataUrlToFile(entry.dashboardPhoto.dataUrl, entry.dashboardPhoto.name || `quadrante_${index + 1}.jpg`));
+    }
+    entry.receiptPhotos.forEach((photo, receiptIndex) => {
+      if (photo?.dataUrl) {
+        files.push(dataUrlToFile(photo.dataUrl, photo.name || `talao_${index + 1}_${receiptIndex + 1}.jpg`));
       }
-
-      entry.receiptPhotos.forEach((photo, receiptIndex) => {
-        if (photo?.dataUrl) {
-          files.push(
-            dataUrlToFile(
-              photo.dataUrl,
-              `${safeDate}_talao_${index + 1}_${receiptIndex + 1}.jpg`
-            )
-          );
-        }
-      });
     });
+  });
 
   try {
     if (navigator.share && navigator.canShare?.({ files })) {
