@@ -17,7 +17,7 @@
         <div>
           <p class="eyebrow">Registo local com partilha semanal</p>
           <h1>Kms Porto</h1>
-          <p class="subtle">Cada comercial regista localmente no seu telemóvel e envia o resumo semanal.</p>
+          <p class="subtle">Cada comercial usa o seu telemóvel e, no fim da semana, partilha o resumo contigo.</p>
         </div>
         <span class="badge">iOS / Android</span>
       </header>
@@ -27,42 +27,33 @@
           <div class="section-title">
             <div>
               <h2>Comercial</h2>
-              <p>Este telemóvel fica associado a um único comercial.</p>
+              <p>Define o perfil deste telemóvel.</p>
             </div>
           </div>
           <label class="field">
-            <span>Comercial deste telemóvel</span>
-            <select id="current-user" disabled></select>
+            <span>Nome</span>
+            <select id="current-user"></select>
           </label>
         </section>
 
         <section class="grid-actions">
-  <button id="btn-new-entry" class="action-card">
-    <strong>Novo registo</strong>
-    <span>KM, observações e fotos do dia.</span>
-  </button>
-
-  <button id="btn-share-week" class="action-card">
-    <strong>Partilhar resumo</strong>
-    <span>Texto semanal para WhatsApp.</span>
-  </button>
-
-  <button id="btn-share-photos" class="action-card">
-    <strong>Partilhar fotos</strong>
-    <span>Quadrante e talões da semana.</span>
-  </button>
-
-  <button id="btn-export-week" class="action-card">
-    <strong>Exportar CSV</strong>
-    <span>Resumo semanal em ficheiro.</span>
-  </button>
-
-  <button id="btn-go-settings" class="action-card">
-    <strong>Configurar</strong>
-    <span>Lista da equipa e opções.</span>
-  </button>
-</section>
-         
+          <button id="btn-new-entry" class="action-card">
+            <strong>Novo registo</strong>
+            <span>KM, observações e fotos do dia.</span>
+          </button>
+          <button id="btn-share-week" class="action-card">
+            <strong>Partilhar semana</strong>
+            <span>Enviar por WhatsApp ou email.</span>
+          </button>
+          <button id="btn-export-week" class="action-card">
+            <strong>Exportar CSV</strong>
+            <span>Resumo semanal em ficheiro.</span>
+          </button>
+          <button id="btn-go-settings" class="action-card">
+            <strong>Configurar</strong>
+            <span>Lista da equipa e opções.</span>
+          </button>
+        </section>
 
         <section class="card">
           <div class="section-title">
@@ -81,7 +72,7 @@
               <strong id="metric-km">0</strong>
             </div>
             <div class="metric-box">
-              <span>Fotos de talões</span>
+              <span>Talões</span>
               <strong id="metric-receipts">0</strong>
             </div>
           </div>
@@ -136,7 +127,7 @@
           </label>
           <div id="receipts-preview" class="preview-grid"></div>
 
-          <div id="km-day-box" class="info-box" hidden>
+          <div class="info-box">
             KM do dia: <strong id="km-day-preview">0</strong>
           </div>
 
