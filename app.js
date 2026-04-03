@@ -498,6 +498,7 @@ async function onExportWeek() {
 
 async function onShareWeek() {
   const entries = getMyWeekEntries();
+
   if (!entries.length) {
     showToast("Não existem registos nesta semana.");
     return;
@@ -506,26 +507,38 @@ async function onShareWeek() {
   const week = currentWeek();
   const year = currentYear();
   const text = makeWeeklySummaryText(entries, state.currentUser, week, year);
-  const csvFile = new File(
-    [csvFromEntries(entries)],
-    `resumo_semanal_${state.currentUser.replace(/\s+/g, "_")}_${week}_${year}.csv`,
-    { type: "text/csv" }
-  );
 
-  const files = [csvFile];
-  entries.forEach((entry, index) => {
-    if (entry.dashboardPhoto?.dataUrl) {
-      files.push(dataUrlToFile(entry.dashboardPhoto.dataUrl, entry.dashboardPhoto.name || `quadrante_${index + 1}.jpg`));
-    }
-    entry.receiptPhotos.forEach((photo, receiptIndex) => {
-      if (photo?.dataUrl) {
-        files.push(dataUrlToFile(photo.dataUrl, photo.name || `talao_${index + 1}_${receiptIndex + 1}.jpg`));
+  const files = [];
+
+  entries
+    .slice()
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .forEach((entry, index) => {
+      const safeDate = entry.date || `dia_${index + 1}`;
+
+      if (entry.dashboardPhoto?.dataUrl) {
+        files.push(
+          dataUrlToFile(
+            entry.dashboardPhoto.dataUrl,
+            `${safeDate}_quadrante_${index + 1}.jpg`
+          )
+        );
       }
+
+      entry.receiptPhotos.forEach((photo, receiptIndex) => {
+        if (photo?.dataUrl) {
+          files.push(
+            dataUrlToFile(
+              photo.dataUrl,
+              `${safeDate}_talao_${index + 1}_${receiptIndex + 1}.jpg`
+            )
+          );
+        }
+      });
     });
-  });
 
   try {
-    if (navigator.share && navigator.canShare?.({ files })) {
+    if (navigator.share && files.length && navigator.canShare?.({ files })) {
       await navigator.share({
         title: `Resumo semanal ${state.currentUser}`,
         text,
