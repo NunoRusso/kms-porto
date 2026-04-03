@@ -54,7 +54,8 @@ const els = {
   entryDashboardPhoto: document.getElementById("entry-dashboard-photo"),
   entryReceiptPhotos: document.getElementById("entry-receipt-photos"),
   dashboardPreview: document.getElementById("dashboard-preview"),
-  receiptsPreview: document.getElementById("receipts-preview"),
+    receiptsPreview: document.getElementById("receipts-preview"),
+  kmDayBox: document.getElementById("km-day-box"),
   kmDayPreview: document.getElementById("km-day-preview"),
   entriesList: document.getElementById("entries-list"),
 };
@@ -329,10 +330,26 @@ function renderPreviews() {
 }
 
 function updateKmDayPreview() {
-  const start = Number(els.entryKmStart.value || 0);
-  const end = Number(els.entryKmEnd.value || 0);
-  const value = end >= start ? end - start : 0;
-  els.kmDayPreview.textContent = String(value);
+  const startRaw = els.entryKmStart.value;
+  const endRaw = els.entryKmEnd.value;
+
+  if (startRaw === "" || endRaw === "") {
+    els.kmDayBox.hidden = true;
+    els.kmDayPreview.textContent = "0";
+    return;
+  }
+
+  const start = Number(startRaw);
+  const end = Number(endRaw);
+
+  if (Number.isNaN(start) || Number.isNaN(end) || end < start) {
+    els.kmDayBox.hidden = true;
+    els.kmDayPreview.textContent = "0";
+    return;
+  }
+
+  els.kmDayBox.hidden = false;
+  els.kmDayPreview.textContent = String(end - start);
 }
 
 function showScreen(screenId) {
