@@ -403,19 +403,33 @@ async function handleDashboardPhotoChange(file) {
     renderPreviews();
     return;
   }
-  state.dashboardPhoto = await compressImage(file, { maxWidth: 1600, quality: 0.78 });
-  renderPreviews();
+
+  state.isProcessingFiles = true;
+
+  try {
+    state.dashboardPhoto = await compressImage(file, { maxWidth: 1600, quality: 0.78 });
+    renderPreviews();
+  } finally {
+    state.isProcessingFiles = false;
+  }
 }
 
 async function handleReceiptPhotosChange(fileList) {
   const files = Array.from(fileList || []).slice(0, 5);
+
+  state.isProcessingFiles = true;
   state.receiptPhotos = [];
-  for (const file of files) {
-    // talões: tamanho mais pequeno para poupar armazenamento
-    const photo = await compressImage(file, { maxWidth: 1200, quality: 0.72 });
-    state.receiptPhotos.push(photo);
+
+  try {
+    for (const file of files) {
+      // talões: tamanho mais pequeno para poupar armazenamento
+      const photo = await compressImage(file, { maxWidth: 1200, quality: 0.72 });
+      state.receiptPhotos.push(photo);
+    }
+    renderPreviews();
+  } finally {
+    state.isProcessingFiles = false;
   }
-  renderPreviews();
 }
 
 async function onEntrySubmit(event) {
@@ -441,6 +455,10 @@ async function onEntrySubmit(event) {
   }
   if (kmEnd < kmStart) {
     showToast("O km final não pode ser inferior ao inicial.");
+    return;
+  }
+    if (state.isProcessingFiles) {
+    showToast("Aguarda um momento até as fotos ficarem preparadas.");
     return;
   }
 
