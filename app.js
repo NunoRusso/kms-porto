@@ -23,6 +23,7 @@ const state = {
   entries: [],
   dashboardPhoto: null,
   receiptPhotos: [],
+  isProcessingFiles: false,
 };
 
 const els = {
