@@ -25,7 +25,6 @@ const state = {
   receiptPhotos: [],
   isProcessingFiles: false,
 };
-
 const els = {
   screens: document.querySelectorAll(".screen"),
   navButtons: document.querySelectorAll(".nav-btn"),
@@ -38,70 +37,31 @@ const els = {
   metricKm: document.getElementById("metric-km"),
   metricReceipts: document.getElementById("metric-receipts"),
   btnNewEntry: document.getElementById("btn-new-entry"),
- function buildWeekMediaFiles(entries) {
-  const files = [];
+  btnShareWeek: document.getElementById("btn-share-week"),
+  btnSharePhotos: document.getElementById("btn-share-photos"),
+  btnExportWeek: document.getElementById("btn-export-week"),
+  btnGoSettings: document.getElementById("btn-go-settings"),
+  btnGoEntries: document.getElementById("btn-go-entries"),
+  btnCancelEntry: document.getElementById("btn-cancel-entry"),
+  btnBackEntries: document.getElementById("btn-back-entries"),
+  btnSaveSettings: document.getElementById("btn-save-settings"),
+  btnCancelSettings: document.getElementById("btn-cancel-settings"),
+  entryForm: document.getElementById("entry-form"),
+  entrySalesperson: document.getElementById("entry-salesperson"),
+  entryDate: document.getElementById("entry-date"),
+  entryKmStart: document.getElementById("entry-km-start"),
+  entryKmEnd: document.getElementById("entry-km-end"),
+  entryNotes: document.getElementById("entry-notes"),
+  entryDashboardPhoto: document.getElementById("entry-dashboard-photo"),
+  entryReceiptPhotos: document.getElementById("entry-receipt-photos"),
+  dashboardPreview: document.getElementById("dashboard-preview"),
+  receiptsPreview: document.getElementById("receipts-preview"),
+  kmDayBox: document.getElementById("km-day-box"),
+  kmDayPreview: document.getElementById("km-day-preview"),
+  entriesList: document.getElementById("entries-list"),
+};
 
-  entries
-    .slice()
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .forEach((entry, index) => {
-      const safeDate = entry.date || `dia_${index + 1}`;
-
-      if (entry.dashboardPhoto?.dataUrl) {
-        files.push(
-          dataUrlToFile(
-            entry.dashboardPhoto.dataUrl,
-            `${safeDate}_quadrante_${index + 1}.jpg`
-          )
-        );
-      }
-
-      entry.receiptPhotos.forEach((photo, receiptIndex) => {
-        if (photo?.dataUrl) {
-          files.push(
-            dataUrlToFile(
-              photo.dataUrl,
-              `${safeDate}_talao_${index + 1}_${receiptIndex + 1}.jpg`
-            )
-          );
-        }
-      });
-    });
-
-  return files;
-}
-
-async function onShareWeekText() {
-  const entries = getMyWeekEntries();
-
-  if (!entries.length) {
-    showToast("Não existem registos nesta semana.");
-    return;
-  }
-
-  const week = currentWeek();
-  const year = currentYear();
-  const text = makeWeeklySummaryText(entries, state.currentUser, week, year);
-
-  try {
-    if (navigator.share) {
-      await navigator.share({
-        title: `Resumo semanal ${state.currentUser}`,
-        text,
-      });
-      showToast("Resumo semanal preparado para partilha.");
-      return;
-    }
-
-    await navigator.clipboard.writeText(text);
-    showToast("Resumo copiado. Abre o WhatsApp e cola.");
-  } catch (error) {
-    if (error?.name !== "AbortError") {
-      console.error(error);
-      showToast("Não foi possível partilhar o resumo.");
-    }
-  }
-}
+let toastTimer = null;
 
 function buildWeekMediaFiles(entries) {
   const files = [];
